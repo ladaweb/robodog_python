@@ -2,24 +2,29 @@
 """
 Waypoint navigation test for Unitree Go2.
 
+Pure Unitree SDK2 over DDS — no ROS 2.
 Reads waypoints from a CSV file (x,y,label per line), navigates to each
 sequentially using a proportional controller, and logs whether each was
 reached or timed out.
 
+Position is read from the rt/sportmodestate DDS topic.
+Motion commands are sent via SportClient.Move().
+
 Usage:
-    python3 nav_test.py waypoints.csv --interface wlan0       # real robot
-    python3 nav_test.py waypoints.csv --sim                   # Gazebo sim
+    python3 nav_test.py waypoints.csv                     # auto-detect interface
+    python3 nav_test.py waypoints.csv --interface wlan0   # specify interface
 """
 
 import math
 import sys
+import time
 import argparse
 import collections
+import threading
 
-import rclpy
-from rclpy.node import Node
-from nav_msgs.msg import Odometry
-from geometry_msgs.msg import Twist
+from unitree_sdk2py.core.channel import ChannelSubscriber, ChannelFactoryInitialize
+from unitree_sdk2py.idl.unitree_go.msg.dds_ import SportModeState_
+from unitree_sdk2py.go2.sport.sport_client import SportClient
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -31,6 +36,7 @@ MAX_VYAW = 0.5              # rad/s
 KP_LINEAR = 0.5             # proportional gain for distance
 KP_ANGULAR = 1.0            # proportional gain for heading error
 HEADING_THRESHOLD = 0.3     # rad — rotate in place when error exceeds this
+CONTROL_DT = 0.1            # seconds (10 Hz control loop)
 
 Waypoint = collections.namedtuple('Waypoint', ['x', 'y', 'label'])
 
@@ -40,13 +46,6 @@ Waypoint = collections.namedtuple('Waypoint', ['x', 'y', 'label'])
 # ---------------------------------------------------------------------------
 def clamp(value, min_val, max_val):
     return max(min_val, min(value, max_val))
-
-
-def quaternion_to_yaw(q):
-    """Extract yaw from a geometry_msgs Quaternion (x, y, z, w)."""
-    siny_cosp = 2.0 * (q.w * q.z + q.x * q.y)
-    cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z)
-    return math.atan2(siny_cosp, cosy_cosp)
 
 
 def parse_csv(csv_path):
@@ -68,213 +67,157 @@ def parse_csv(csv_path):
 
 
 # ---------------------------------------------------------------------------
-# ROS 2 Node
+# Navigation
 # ---------------------------------------------------------------------------
-class NavTestNode(Node):
-    def __init__(self, csv_path, interface, sim=False):
-        super().__init__('nav_test_node')
-
-        self.sim = sim
-
-        if self.sim:
-            # --- Sim mode: publish Twist on /cmd_vel ---
-            self.cmd_pub = self.create_publisher(Twist, '/cmd_vel', 10)
-            self.sport = None
-            self.get_logger().info('Running in SIMULATION mode (/cmd_vel)')
-        else:
-            # --- Real robot: Unitree SDK setup ---
-            from unitree_sdk2py.core.channel import ChannelFactoryInitialize
-            from unitree_sdk2py.go2.sport.sport_client import SportClient
-
+class NavTest:
+    def __init__(self, csv_path, interface):
+        # --- DDS setup ---
+        if interface:
             ChannelFactoryInitialize(0, interface)
-            self.get_logger().info(f'DDS initialized on {interface}')
+        else:
+            ChannelFactoryInitialize(0)
+        print(f"[nav] DDS initialized" + (f" on {interface}" if interface else ""))
 
-            self.sport = SportClient()
-            self.sport.SetTimeout(10.0)
-            self.sport.Init()
-            self.get_logger().info('SportClient initialized')
+        # --- SportClient for motion commands ---
+        self.sport = SportClient()
+        self.sport.SetTimeout(10.0)
+        self.sport.Init()
+        print("[nav] SportClient initialized")
 
-        # --- ROS 2 odometry subscription ---
-        self.create_subscription(Odometry, '/odom', self._odom_cb, 10)
+        # --- Subscribe to rt/sportmodestate for position ---
+        self.state_sub = ChannelSubscriber("rt/sportmodestate", SportModeState_)
+        self.state_sub.Init(self._state_handler, 10)
+        print("[nav] Subscribed to rt/sportmodestate")
 
         # --- Waypoints ---
         self.waypoints = parse_csv(csv_path)
         if not self.waypoints:
-            self.get_logger().error('No waypoints found in CSV — exiting')
-            raise SystemExit(1)
-        self.get_logger().info(
-            f'Loaded {len(self.waypoints)} waypoints from {csv_path}'
-        )
+            print("[nav] ERROR: no waypoints found in CSV")
+            sys.exit(1)
+        print(f"[nav] Loaded {len(self.waypoints)} waypoints from {csv_path}")
 
-        # --- State ---
+        # --- State (updated by DDS callback thread) ---
         self.cur_x = 0.0
         self.cur_y = 0.0
         self.cur_yaw = 0.0
-        self.odom_received = False
+        self.state_received = False
+        self._lock = threading.Lock()
 
-        self.wp_index = 0
-        self.wp_start_time = None
-        self.results = []  # list of dicts {label, status, elapsed}
-        self.finished = False
+        # --- Results ---
+        self.results = []
 
-        # --- Control loop at 10 Hz ---
-        self.timer = self.create_timer(0.1, self._control_loop)
-        self.get_logger().info('Navigation test started — waiting for /odom')
+    def _state_handler(self, msg: SportModeState_):
+        """DDS callback — runs on subscriber thread."""
+        with self._lock:
+            self.cur_x = msg.position[0]
+            self.cur_y = msg.position[1]
+            self.cur_yaw = msg.imu_state.rpy[2]  # yaw from IMU
+            self.state_received = True
 
-    # ---- callbacks --------------------------------------------------------
-    def _odom_cb(self, msg: Odometry):
-        self.cur_x = msg.pose.pose.position.x
-        self.cur_y = msg.pose.pose.position.y
-        self.cur_yaw = quaternion_to_yaw(msg.pose.pose.orientation)
-        if not self.odom_received:
-            self.odom_received = True
-            self.get_logger().info(
-                f'First odom received: x={self.cur_x:.2f}  '
-                f'y={self.cur_y:.2f}  yaw={math.degrees(self.cur_yaw):.1f}°'
-            )
+    def _get_pose(self):
+        with self._lock:
+            return self.cur_x, self.cur_y, self.cur_yaw, self.state_received
 
-    # ---- control loop -----------------------------------------------------
-    def _control_loop(self):
-        if not self.odom_received:
-            return
+    def run(self):
+        """Main control loop — runs on the main thread."""
 
-        if self.finished:
-            return
+        # Wait for first state message
+        print("[nav] Waiting for rt/sportmodestate ...")
+        while True:
+            _, _, _, received = self._get_pose()
+            if received:
+                break
+            time.sleep(0.1)
 
-        if self.wp_index >= len(self.waypoints):
-            self._finish()
-            return
+        x, y, yaw, _ = self._get_pose()
+        print(f"[nav] First state: x={x:.2f}  y={y:.2f}  yaw={math.degrees(yaw):.1f}°")
 
-        wp = self.waypoints[self.wp_index]
+        # Navigate to each waypoint
+        for i, wp in enumerate(self.waypoints):
+            print(f"[nav] [{i+1}/{len(self.waypoints)}] Navigating to {wp.label} ({wp.x:.2f}, {wp.y:.2f})")
+            result = self._go_to_waypoint(wp)
+            self.results.append(result)
 
-        # First tick for this waypoint — record start time
-        if self.wp_start_time is None:
-            self.wp_start_time = self.get_clock().now()
-            self.get_logger().info(
-                f'[{self.wp_index + 1}/{len(self.waypoints)}] '
-                f'Navigating to {wp.label} ({wp.x:.2f}, {wp.y:.2f})'
-            )
+        # Done
+        self.sport.StopMove()
+        self._print_summary()
 
-        dx = wp.x - self.cur_x
-        dy = wp.y - self.cur_y
-        distance = math.sqrt(dx * dx + dy * dy)
-        elapsed = (self.get_clock().now() - self.wp_start_time).nanoseconds / 1e9
+    def _go_to_waypoint(self, wp):
+        start = time.monotonic()
 
-        # --- Reached? ---
-        if distance < REACH_THRESHOLD:
-            self._send_cmd(0.0, 0.0)
-            self.get_logger().info(
-                f'  -> REACHED {wp.label} in {elapsed:.1f}s '
-                f'(dist={distance:.2f}m)'
-            )
-            self.results.append(
-                {'label': wp.label, 'status': 'reached', 'elapsed': elapsed}
-            )
-            self._advance()
-            return
+        while True:
+            x, y, yaw, _ = self._get_pose()
+            dx = wp.x - x
+            dy = wp.y - y
+            distance = math.sqrt(dx * dx + dy * dy)
+            elapsed = time.monotonic() - start
 
-        # --- Timeout? ---
-        if elapsed > WAYPOINT_TIMEOUT:
-            self._send_cmd(0.0, 0.0)
-            self.get_logger().warn(
-                f'  -> TIMEOUT on {wp.label} after {elapsed:.1f}s '
-                f'(dist remaining={distance:.2f}m)'
-            )
-            self.results.append(
-                {'label': wp.label, 'status': 'timeout', 'elapsed': elapsed}
-            )
-            self._advance()
-            return
-
-        # --- Proportional controller ---
-        target_yaw = math.atan2(dy, dx)
-        heading_error = math.atan2(
-            math.sin(target_yaw - self.cur_yaw),
-            math.cos(target_yaw - self.cur_yaw),
-        )
-
-        if abs(heading_error) > HEADING_THRESHOLD:
-            # Rotate in place
-            vx = 0.0
-            vyaw = clamp(KP_ANGULAR * heading_error, -MAX_VYAW, MAX_VYAW)
-        else:
-            # Move forward with yaw correction
-            vx = clamp(KP_LINEAR * distance, 0.0, MAX_VX)
-            vyaw = clamp(KP_ANGULAR * heading_error, -MAX_VYAW, MAX_VYAW)
-
-        self._send_cmd(vx, vyaw)
-
-    # ---- helpers ----------------------------------------------------------
-    def _advance(self):
-        self.wp_index += 1
-        self.wp_start_time = None
-
-    def _send_cmd(self, vx, vyaw):
-        """Send velocity command via /cmd_vel (sim) or SportClient (real)."""
-        if self.sim:
-            msg = Twist()
-            msg.linear.x = vx
-            msg.angular.z = vyaw
-            self.cmd_pub.publish(msg)
-        else:
-            if vx == 0.0 and vyaw == 0.0:
+            # Reached?
+            if distance < REACH_THRESHOLD:
                 self.sport.StopMove()
+                print(f"  -> REACHED {wp.label} in {elapsed:.1f}s (dist={distance:.2f}m)")
+                return {'label': wp.label, 'status': 'reached', 'elapsed': elapsed}
+
+            # Timeout?
+            if elapsed > WAYPOINT_TIMEOUT:
+                self.sport.StopMove()
+                print(f"  -> TIMEOUT on {wp.label} after {elapsed:.1f}s (dist remaining={distance:.2f}m)")
+                return {'label': wp.label, 'status': 'timeout', 'elapsed': elapsed}
+
+            # Proportional controller
+            target_yaw = math.atan2(dy, dx)
+            heading_error = math.atan2(
+                math.sin(target_yaw - yaw),
+                math.cos(target_yaw - yaw),
+            )
+
+            if abs(heading_error) > HEADING_THRESHOLD:
+                vx = 0.0
+                vyaw = clamp(KP_ANGULAR * heading_error, -MAX_VYAW, MAX_VYAW)
             else:
-                self.sport.Move(vx, 0.0, vyaw)
+                vx = clamp(KP_LINEAR * distance, 0.0, MAX_VX)
+                vyaw = clamp(KP_ANGULAR * heading_error, -MAX_VYAW, MAX_VYAW)
 
-    def _finish(self):
-        self.finished = True
-        self._send_cmd(0.0, 0.0)
-        self.timer.cancel()
+            self.sport.Move(vx, 0.0, vyaw)
+            time.sleep(CONTROL_DT)
 
-        self.get_logger().info('========== NAVIGATION SUMMARY ==========')
+    def _print_summary(self):
+        print("\n========== NAVIGATION SUMMARY ==========")
         reached = 0
         for r in self.results:
             tag = 'OK' if r['status'] == 'reached' else 'FAIL'
-            self.get_logger().info(
-                f"  [{tag}] {r['label']}: {r['status']} ({r['elapsed']:.1f}s)"
-            )
+            print(f"  [{tag}] {r['label']}: {r['status']} ({r['elapsed']:.1f}s)")
             if r['status'] == 'reached':
                 reached += 1
-        self.get_logger().info(
-            f'Result: {reached}/{len(self.results)} waypoints reached'
-        )
-        self.get_logger().info('=========================================')
+        print(f"Result: {reached}/{len(self.results)} waypoints reached")
+        print("=========================================\n")
 
-    def stop_robot(self):
-        """Ensure robot stops — called on shutdown."""
-        self._send_cmd(0.0, 0.0)
+    def stop(self):
+        """Emergency stop — call on Ctrl+C."""
+        self.sport.Move(0.0, 0.0, 0.0)
+        self.sport.StopMove()
 
 
 # ---------------------------------------------------------------------------
 # main
 # ---------------------------------------------------------------------------
 def main():
-    parser = argparse.ArgumentParser(
-        description='Go2 waypoint navigation test'
-    )
+    parser = argparse.ArgumentParser(description='Go2 waypoint navigation test')
     parser.add_argument('csv_file', help='CSV file with x,y,label waypoints')
     parser.add_argument(
         '--interface', default='wlan0',
         help='Network interface for DDS (default: wlan0)',
     )
-    parser.add_argument(
-        '--sim', action='store_true',
-        help='Simulation mode: publish Twist on /cmd_vel instead of using SportClient',
-    )
-    parsed = parser.parse_args()
+    args = parser.parse_args()
 
-    rclpy.init()
-    node = NavTestNode(parsed.csv_file, parsed.interface, sim=parsed.sim)
+    nav = NavTest(args.csv_file, args.interface)
 
     try:
-        rclpy.spin(node)
+        nav.run()
     except KeyboardInterrupt:
-        node.get_logger().info('Ctrl+C — stopping robot')
-
-    node.stop_robot()
-    node.destroy_node()
-    rclpy.shutdown()
+        print("\n[nav] Ctrl+C — stopping robot")
+    finally:
+        nav.stop()
 
 
 if __name__ == '__main__':
