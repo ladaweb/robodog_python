@@ -1,0 +1,8 @@
+add_executable(get_position get_position.cpp)
+target_link_libraries(get_position unitree_sdk2)
+
+add_executable(return_to_qr_position return_to_qr_position.cpp)
+target_link_libraries(return_to_qr_position unitree_sdk2)
+
+add_executable(try_return try_return.cpp)
+target_link_libraries(try_return unitree_sdk2)
