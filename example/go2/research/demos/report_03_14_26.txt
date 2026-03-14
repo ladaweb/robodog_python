@@ -1,0 +1,411 @@
+
+# QR-Based Waypoint Acquisition, Autonomous Navigation, and Obstacle-Aware Inspection Framework
+
+## 1. Objective
+
+The objective of this work was to implement a vision-based waypoint acquisition and autonomous navigation framework that allows a mobile inspection robot to record navigation targets using QR markers and later revisit those targets while performing obstacle-aware navigation.
+
+The system is designed for inspection scenarios in structured indoor environments where predefined inspection points are marked using QR codes.
+When the robot detects a marker, the current pose from the localization system is recorded and stored.
+The stored poses are then used as navigation goals for autonomous execution.
+
+A key requirement of the system is that the recorded pose must correspond to the **last visible frame of the marker**, ensuring that the robot approaches the marker closely enough for accurate inspection.
+
+The implemented framework integrates:
+
+* SLAM-based localization
+* Autonomous pose navigation
+* Real-time video processing
+* QR-based waypoint acquisition
+* Persistent pose storage
+* Obstacle-aware navigation
+* Multi-threaded perception and control
+* Future integration with radiation sensing
+
+The system enables the robot to autonomously construct inspection routes using only visual markers placed in the environment.
+
+---
+
+## 2. System Architecture
+
+The implemented system consists of several asynchronous modules:
+
+1. Navigation client
+2. SLAM pose subscriber
+3. Video stream acquisition module
+4. QR detection thread
+5. Pose recording module
+6. QR pose database
+7. Task list navigation controller
+8. Navigation state manager
+9. Obstacle avoidance / local planner
+
+The data flow is shown conceptually:
+
+```
+Camera → QR detection → Pose snapshot → QR database → Task list → Navigation
+                     ↑             ↑
+                SLAM pose      JSON storage
+
+Navigation → Local planner → Obstacle avoidance → Motor control
+```
+
+Localization, perception, and navigation run concurrently.
+
+QR detection runs in a separate thread to avoid blocking the navigation loop.
+
+---
+
+## 3. Localization and Navigation Interface
+
+The robot uses a SLAM-based navigation system that provides:
+
+* map building
+* map loading
+* localization
+* pose estimation
+* pose-based navigation
+* navigation status feedback
+
+The navigation client communicates with the SLAM service and sends commands for:
+
+* start mapping
+* end mapping
+* start relocation
+* send navigation goal
+* pause navigation
+* resume navigation
+* monitor task result
+
+The current robot pose is continuously published by the localization module.
+
+Each pose contains:
+
+```
+x, y, z
+q_x, q_y, q_z, q_w
+```
+
+where
+
+* position is expressed in the map frame
+* orientation is represented as a quaternion
+
+The pose is updated at runtime and stored in a shared variable protected by a mutex to ensure thread-safe access.
+
+---
+
+## 4. Real-Time Camera Stream Processing
+
+The robot camera stream is accessed via a UDP multicast video stream.
+
+The stream is decoded using a GStreamer pipeline and processed using OpenCV.
+
+Pipeline:
+
+```
+udpsrc → RTP → H264 decode → BGR → OpenCV
+```
+
+Frames are captured using:
+
+```
+cv::VideoCapture(..., CAP_GSTREAMER)
+```
+
+The video processing loop runs in a dedicated thread to allow:
+
+* continuous navigation
+* continuous localization
+* continuous perception
+
+without blocking the control loop.
+
+---
+
+## 5. QR Detection Pipeline
+
+QR detection is implemented using:
+
+```
+cv::QRCodeDetector
+```
+
+Each frame is processed independently.
+
+For every frame:
+
+```
+read frame
+detect QR
+decode ID
+```
+
+If a QR marker is detected:
+
+```
+read current pose
+store pose
+update pose if marker still visible
+```
+
+Each marker is uniquely identified by its decoded text.
+
+Multiple markers can be stored simultaneously.
+
+---
+
+## 6. Last-Frame Pose Recording Strategy
+
+A critical design decision was to record the pose corresponding to the **last visible frame** of the QR detection rather than the first.
+
+This ensures that the navigation target is close to the marker.
+
+Detection sequence:
+
+```
+frame 1 → far
+frame 2 → closer
+frame 3 → closer
+frame 4 → very close
+frame 5 → marker lost
+```
+
+Implementation:
+
+```
+if QR visible:
+    overwrite stored pose
+```
+
+The pose is updated every frame while the marker is visible.
+
+When the marker disappears, the last pose remains stored.
+
+This guarantees that the robot will later navigate to the closest reachable position.
+
+This behavior is required for inspection tasks where sensors must be close to the target.
+
+---
+
+## 7. QR Pose Database
+
+Each detected marker is stored as:
+
+```
+QR ID
+Pose
+Task index
+```
+
+Example entry:
+
+```
+{
+  qrText
+  pose
+  taskIndex
+}
+```
+
+All entries are written to:
+
+```
+/home/unitree/qr_poses.json
+```
+
+The file is updated whenever a pose changes.
+
+This allows:
+
+* persistent inspection routes
+* debugging
+* offline analysis
+* future mapping of measurements
+
+---
+
+## 8. Task List Navigation
+
+Every stored pose is also inserted into the navigation task list.
+
+```
+poseList.push_back(pose)
+```
+
+The index is saved to allow updating the same task.
+
+If the robot approaches closer to the marker, the stored pose is replaced.
+
+This ensures accurate navigation targets.
+
+The navigation controller executes the task list sequentially.
+
+For each pose:
+
+```
+send goal
+wait until arrived
+send next goal
+```
+
+---
+
+## 9. Obstacle Avoidance and Local Planning
+
+During navigation the robot uses the built-in local planner to avoid obstacles.
+
+The navigation system consists of two layers:
+
+### Global planner
+
+* computes path on the map
+* uses SLAM map
+* generates target trajectory
+
+### Local planner
+
+* runs in real time
+* adjusts motion commands
+* avoids obstacles
+* maintains stability
+
+The local planner uses sensor data from:
+
+* LiDAR
+* depth camera
+* internal obstacle detection
+
+During navigation the robot continuously checks for obstacles.
+
+If an obstacle is detected:
+
+```
+slow down
+replan locally
+avoid obstacle
+continue to goal
+```
+
+This allows the robot to safely approach QR locations even if the environment changes.
+
+Obstacle avoidance is fully active during pose navigation.
+
+QR detection is disabled during navigation to prevent pose corruption.
+
+---
+
+## 10. Navigation State Control
+
+QR detection must not run while navigation is active.
+
+Otherwise new poses could be recorded while the robot moves automatically.
+
+A navigation state flag is used:
+
+```
+navigationActive
+```
+
+Behavior:
+
+| Mode                 | QR detection |
+| -------------------- | ------------ |
+| Mapping              | OFF          |
+| Relocation           | ON           |
+| Manual movement      | ON           |
+| Automatic navigation | OFF          |
+
+Implementation:
+
+```
+if navigationActive:
+    skip QR detection
+```
+
+This guarantees that pose recording happens only during manual exploration.
+
+---
+
+## 11. Execution Workflow
+
+### Mapping
+
+Create map.
+
+### Relocation
+
+Start localization.
+
+QR detection starts after relocation.
+
+### Manual exploration
+
+Move robot manually.
+
+For each marker:
+
+```
+QR detected
+pose updated every frame
+last pose saved
+```
+
+### Navigation
+
+Execute task list.
+
+Robot visits all QR poses.
+
+### Obstacle avoidance active
+
+Robot avoids obstacles during navigation.
+
+### Clear list
+
+Remove stored poses.
+
+---
+
+## 12. Application to Radiation Inspection
+
+The system is designed for autonomous inspection.
+
+Future workflow:
+
+```
+Navigate to QR
+Stop near QR
+Measure radiation
+Store measurement
+Continue to next QR
+```
+
+Each inspection point will contain:
+
+```
+QR ID
+Pose
+Radiation level
+Time
+```
+
+This allows building radiation maps aligned with SLAM coordinates.
+
+---
+
+## 13. Conclusion
+
+A QR-based waypoint acquisition and obstacle-aware navigation framework was implemented for autonomous inspection.
+
+The system provides:
+
+* real-time QR detection
+* last-frame pose recording
+* persistent pose storage
+* automatic task list generation
+* obstacle-aware navigation
+* safe execution of inspection routes
+* multi-threaded perception and control
+
+The framework enables reliable autonomous inspection and provides a foundation for future integration with radiation sensing and environmental monitoring.
