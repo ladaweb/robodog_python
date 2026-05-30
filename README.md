@@ -1,113 +1,221 @@
-# unitree_sdk2_python
-Python interface for unitree sdk2
+# Autonomous Robotic Inspection Platform for Nuclear and Hazardous Environments
 
-# Installation
-## Dependencies
+A research platform for autonomous semantic inspection, LiDAR-based mapping, and future radiation-aware navigation using the **Unitree Go2 EDU** quadruped robot.
+
+---
+
+## Research Overview
+
+This project develops an AI-assisted autonomous quadruped robotic system for semantic inspection, spatial mapping, and radiation-aware navigation in nuclear and hazardous indoor environments.
+
+The system combines LiDAR-based SLAM, vision-based semantic localization (QR checkpoints), and ROS2 autonomy to enable a robot that can:
+
+- build and reuse accurate indoor maps
+- localize itself reliably within those maps
+- navigate autonomously to predefined inspection points
+- avoid obstacles in real time
+- record and revisit semantic waypoints
+- (planned) sense and spatially map radiation levels
+
+---
+
+## Hardware
+
+| Component | Role |
+|---|---|
+| Unitree Go2 EDU | Quadruped mobility platform |
+| Hesai XT16 LiDAR | 3D environment perception and SLAM |
+| Front RGB camera | QR detection and visual inspection |
+| Radiacode 103G *(planned)* | Radiation sensing |
+
+---
+
+## System Architecture
+
+```
+Camera → QR detection → Pose snapshot → QR database → Task list → Navigation
+                     ↑             ↑
+                SLAM pose      JSON storage
+
+Navigation → Local planner → Obstacle avoidance → Motor control
+```
+
+Localization, perception, and navigation run concurrently in separate threads.
+
+### Core modules
+
+- **SLAM navigation client** — map building, relocation, pose-based goal execution
+- **SLAM pose subscriber** — continuous localization from the LiDAR SLAM service
+- **Video stream module** — UDP multicast H264 stream decoded via GStreamer + OpenCV
+- **QR detection thread** — real-time detection using `cv::QRCodeDetector`
+- **Pose recording module** — last-visible-frame strategy for accurate waypoint capture
+- **QR pose database** — persistent JSON storage of inspection waypoints
+- **Navigation state manager** — pauses QR detection during autonomous traversal
+- **Obstacle avoidance / local planner** — real-time replanning around dynamic obstacles
+
+---
+
+## Current Capabilities
+
+- Autonomous indoor navigation using saved LiDAR maps
+- SLAM-based localization and map reuse
+- Real-time obstacle avoidance (LiDAR + depth camera)
+- QR code-based semantic waypoint acquisition
+- Last-frame pose recording (stores the closest reachable pose to each marker)
+- Persistent waypoint storage to JSON for repeatable inspection routes
+- Bidirectional task list execution (forward and reverse traversal)
+- QR detection isolation during navigation (prevents pose corruption)
+
+---
+
+## Key Finding from Experiments
+
+Repeated navigation trials in an indoor basement environment showed significant improvement across runs:
+
+| Run | Time to first checkpoint | Battery used |
+|---|---|---|
+| Training run 1 | 55 sec | ~12% |
+| Training run 2 | 22 sec | ~10% |
+| Final evaluation | 10 sec | ~4% |
+
+**Important:** localization and navigation quality degrade when the map becomes outdated or insufficiently detailed. Periodic remapping is required when:
+- navigation performance degrades noticeably
+- localization becomes unstable
+- the environment layout changes
+
+---
+
+## Research Domains
+
+| Area | Role |
+|---|---|
+| Robotics | Autonomous quadruped mobility |
+| ROS2 | Communication and system integration |
+| SLAM | Mapping and localization |
+| LiDAR perception | 3D environment understanding |
+| Semantic mapping | Associating meaning with spatial locations |
+| Nuclear engineering | Inspection and radiation monitoring applications |
+| AI / autonomy | Future intelligent inspection behavior |
+
+---
+
+## Planned Capabilities
+
+- **Radiation sensing** — integration with Radiacode 103G detector
+- **Radiation heatmaps** — 2D/3D spatial radiation maps aligned to SLAM coordinates
+- **Semantic object recognition** — camera-based identification of inspection targets
+- **Autonomous patrol routines** — scheduled inspection without human intervention
+- **Hazard-aware navigation** — routing that avoids high-radiation zones
+- **Advanced LiDAR SLAM** — improved localization in repetitive or featureless environments
+
+---
+
+## Repository Structure
+
+```
+.
+├── unitree_sdk2py/          # Python SDK wrapping Unitree SDK2 (DDS/ROS2 interface)
+│   ├── core/                # DDS channel setup
+│   ├── go2/                 # Go2-specific clients (sport, video, obstacle avoidance, VUI)
+│   ├── rpc/                 # RPC client/server infrastructure
+│   └── idl/                 # DDS IDL message definitions
+│
+└── example/
+    └── go2/
+        ├── research/
+        │   ├── actualDog/
+        │   │   ├── src/     # C++ autonomous navigation implementations
+        │   │   └── resources/  # Maps, QR pose database, build config
+        │   └── demos/       # Experiment reports and recordings
+        ├── high_level/      # Python high-level sport API examples
+        ├── low_level/       # Python low-level motor control examples
+        └── front_camera/    # Camera stream examples
+```
+
+---
+
+## Installation
+
+### Dependencies
+
 - Python >= 3.8
 - cyclonedds == 0.10.2
 - numpy
 - opencv-python
 
-### Installing from source
-Execute the following commands in the terminal:
-```bash
-cd ~
-sudo apt install python3-pip
-git clone https://github.com/unitreerobotics/unitree_sdk2_python.git
-cd unitree_sdk2_python
-pip3 install -e .
-```
-## FAQ
-##### 1. Error when `pip3 install -e .`:
-```bash
-Could not locate cyclonedds. Try to set CYCLONEDDS_HOME or CMAKE_PREFIX_PATH
-```
-This error mentions that the cyclonedds path could not be found. First compile and install cyclonedds:
+### Install from source
 
 ```bash
-cd ~
-git clone https://github.com/eclipse-cyclonedds/cyclonedds -b releases/0.10.x 
+sudo apt install python3-pip
+git clone <this-repo>
+cd robodog_python
+pip3 install -e .
+```
+
+### CycloneDDS (if not found automatically)
+
+```bash
+git clone https://github.com/eclipse-cyclonedds/cyclonedds -b releases/0.10.x
 cd cyclonedds && mkdir build install && cd build
 cmake .. -DCMAKE_INSTALL_PREFIX=../install
 cmake --build . --target install
-```
-Enter the unitree_sdk2_python directory, set `CYCLONEDDS_HOME` to the path of the cyclonedds you just compiled, and then install unitree_sdk2_python.
-```bash
-cd ~/unitree_sdk2_python
+
 export CYCLONEDDS_HOME="~/cyclonedds/install"
 pip3 install -e .
 ```
-For details, see: https://pypi.org/project/cyclonedds/#installing-with-pre-built-binaries
 
-# Usage
-The Python sdk2 interface maintains consistency with the unitree_sdk2 interface, achieving robot status acquisition and control through request-response or topic subscription/publishing. Example programs are located in the `/example` directory. Before running the examples, configure the robot's network connection as per the instructions in the document at https://support.unitree.com/home/en/developer/Quick_start.
-## DDS Communication
-In the terminal, execute:
-```bash
-python3 ./example/helloworld/publisher.py
-```
-Open a new terminal and execute:
-```bash
-python3 ./example/helloworld/subscriber.py
-```
-You will see the data output in the terminal. The data structure transmitted between `publisher.py` and `subscriber.py` is defined in `user_data.py`, and users can define the required data structure as needed.
-## High-Level Status and Control
-The high-level interface maintains consistency with unitree_sdk2 in terms of data structure and control methods. For detailed information, refer to https://support.unitree.com/home/en/developer/sports_services.
-### High-Level Status
-Execute the following command in the terminal:
-```bash
-python3 ./example/high_level/read_highstate.py enp2s0
-```
-Replace `enp2s0` with the name of the network interface to which the robot is connected,.
-### High-Level Control
-Execute the following command in the terminal:
-```bash
-python3 ./example/high_level/sportmode_test.py enp2s0
-```
-Replace `enp2s0` with the name of the network interface to which the robot is connected. This example program provides several test methods, and you can choose the required tests as follows:
-```python
-test.StandUpDown() # Stand up and lie down
-# test.VelocityMove() # Velocity control
-# test.BalanceAttitude() # Attitude control
-# test.TrajectoryFollow() # Trajectory tracking
-# test.SpecialMotions() # Special motions
-```
-## Low-Level Status and Control
-The low-level interface maintains consistency with unitree_sdk2 in terms of data structure and control methods. For detailed information, refer to https://support.unitree.com/home/en/developer/Basic_services.
-### Low-Level Status
-Execute the following command in the terminal:
-```bash
-python3 ./example/low_level/lowlevel_control.py enp2s0
-```
-Replace `enp2s0` with the name of the network interface to which the robot is connected. The program will output the state of the right front leg hip joint, IMU, and battery voltage.
-### Low-Level Motor Control
-First, use the app to turn off the high-level motion service (sport_mode) to prevent conflicting instructions.
-Execute the following command in the terminal:
-```bash
-python3 ./example/low_level/lowlevel_control.py enp2s0
-```
-Replace `enp2s0` with the name of the network interface to which the robot is connected. The left hind leg hip joint will maintain a 0-degree position (for safety, set kp=10, kd=1), and the left hind leg calf joint will continuously output 1Nm of torque.
-## Wireless Controller Status
-Execute the following command in the terminal:
-```bash
-python3 ./example/wireless_controller/wireless_controller.py enp2s0
-```
-Replace `enp2s0` with the name of the network interface to which the robot is connected. The terminal will output the status of each key. For the definition and data structure of the remote control keys, refer to https://support.unitree.com/home/en/developer/Get_remote_control_status.
-## Front Camera
-Use OpenCV to obtain the front camera (ensure to run on a system with a graphical interface, and press ESC to exit the program):
-```bash
-python3 ./example/front_camera/camera_opencv.py enp2s0
-```
-Replace `enp2s0` with the name of the network interface to which the robot is connected.
+---
 
-## Obstacle Avoidance Switch
-```bash
-python3 ./example/obstacles_avoid_switch/obstacles_avoid_switch.py enp2s0
-```
-Replace `enp2s0` with the name of the network interface to which the robot is connected. The robot will cycle obstacle avoidance on and off. For details on the obstacle avoidance service, see https://support.unitree.com/home/en/developer/ObstaclesAvoidClient
+## Building the C++ Navigation System
 
-## Light and volume control
 ```bash
-python3 ./example/vui_client/vui_client_example.py enp2s0
+cd example/go2/research/actualDog
+mkdir build && cd build
+cmake ..
+make
 ```
-Replace `enp2s0` with the name of the network interface to which the robot is connected.T he robot will cycle the volume and light brightness. The interface is detailed at https://support.unitree.com/home/en/developer/VuiClient
+
+### Running autonomous navigation
+
+```bash
+./autonomous_nav_qr_detection_final <network_interface>
+```
+
+**Key bindings:**
+
+| Key | Action |
+|---|---|
+| `q` | Start mapping |
+| `w` | End mapping and save map |
+| `a` | Start relocation (begins QR detection) |
+| `s` | Manually add current pose to task list |
+| `d` | Execute task list (navigate to all waypoints) |
+| `f` | Clear task list and QR pose database |
+| `z` | Pause navigation |
+| `x` | Resume navigation |
+| `Ctrl+C` | Exit |
+
+---
+
+## Network Setup
+
+Before running any examples, configure the robot's network connection per the [Unitree quick start guide](https://support.unitree.com/home/en/developer/Quick_start). Replace `enp2s0` in all commands with your actual network interface name.
+
+---
+
+## SDK Examples
+
+```bash
+# DDS pub/sub communication test
+python3 example/helloworld/publisher.py
+python3 example/helloworld/subscriber.py
+
+# High-level sport control
+python3 example/go2/high_level/go2_sport_client.py enp2s0
+
+# Front camera stream (requires display)
+python3 example/go2/front_camera/camera_opencv.py enp2s0
+
+# Obstacle avoidance toggle
+python3 example/obstacles_avoid/obstacles_avoid_switch.py enp2s0
+```
