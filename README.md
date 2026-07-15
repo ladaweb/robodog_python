@@ -219,3 +219,67 @@ python3 example/go2/front_camera/camera_opencv.py enp2s0
 # Obstacle avoidance toggle
 python3 example/obstacles_avoid/obstacles_avoid_switch.py enp2s0
 ```
+
+---
+
+## Connecting to the Dock Jetson via WiFi
+
+The dock Jetson broadcasts a WiFi hotspot named `DroneBlocks-Go2-001`. Connecting your laptop to this hotspot lets you SSH into the Jetson without an ethernet cable.
+
+### Prerequisites (one-time, already done)
+- BrosTrend / ALFA AC1L WiFi adapter (MediaTek MT7612U chipset)
+- `mt76x2u` driver (in-kernel on Ubuntu 20.04 for JetPack — no install needed)
+- NetworkManager configured with `managed=true` in `/etc/NetworkManager/NetworkManager.conf`
+- Hotspot profile `Go2-Hotspot` saved in NetworkManager (autoconnect enabled)
+
+### Every-time usage
+
+1. **Plug the WiFi adapter into the dock Jetson's USB port.**
+2. Wait ~10 seconds for the adapter to enumerate. The `Go2-Hotspot` profile is set to autoconnect, so the hotspot should come up automatically.
+3. **From your laptop**, look at available WiFi networks and connect to:
+   - **SSID:** `DroneBlocks-Go2-001`
+   - **Password:** `00000000`
+4. **SSH into the Jetson over WiFi:**
+   ```bash
+   ssh unitree@10.42.0.1
+   ```
+   Password: `123`
+
+### Verifying the hotspot is up (from the Jetson)
+
+If SSH over WiFi isn't working, plug in ethernet, SSH via `192.168.123.18`, and check:
+
+```bash
+nmcli device status          # wlan0 should show 'connected' to Go2-Hotspot
+ip addr show wlan0           # should have 10.42.0.1/24
+```
+
+If `wlan0` is present but disconnected, bring the hotspot up manually:
+
+```bash
+sudo nmcli connection up Go2-Hotspot
+```
+
+If `wlan0` doesn't appear at all, the adapter isn't being detected. Check:
+
+```bash
+lsusb | grep -i mediatek     # should show '0e8d:7612 MediaTek Inc. Wireless'
+ip link show wlan0
+```
+
+### Important notes
+
+- The `DroneBlocks-Go2-001` hotspot is **local-only** — it does not provide internet access. Your laptop will lose internet while connected to it. If you need internet on your laptop simultaneously, use a wired ethernet connection or USB tether for internet, and reserve WiFi for the Jetson hotspot.
+- The dock Jetson's ethernet interface (`eth0`, `192.168.123.18`) continues to work independently. You can SSH via either `10.42.0.1` (WiFi) or `192.168.123.18` (ethernet) — both will work when both interfaces are up.
+- Do **not** replace the hotspot profile with a client-mode WiFi connection to an external router. Doing so has been observed to disrupt eth0 routing on this Jetson and requires a reboot to recover.
+
+### Hotspot credentials — change from defaults if used outside a controlled lab
+
+Default credentials (`DroneBlocks-Go2-001` / `00000000`) are public knowledge from the DroneBlocks guide. To change them:
+
+```bash
+sudo nmcli connection modify Go2-Hotspot 802-11-wireless.ssid "your_new_ssid"
+sudo nmcli connection modify Go2-Hotspot wifi-sec.psk "your_new_password"
+sudo nmcli connection down Go2-Hotspot
+sudo nmcli connection up Go2-Hotspot
+```
