@@ -458,7 +458,6 @@ python3 example/obstacles_avoid/obstacles_avoid_switch.py enp2s0
 
 ---
 
-<<<<<<< HEAD
 ## Validation and Metrics Collection
 
 ### Running autonomous patrol experiments
