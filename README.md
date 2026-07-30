@@ -571,4 +571,3 @@ sudo nmcli connection modify Go2-Hotspot wifi-sec.psk "your_new_password"
 sudo nmcli connection down Go2-Hotspot
 sudo nmcli connection up Go2-Hotspot
 ```
->>>>>>> 33a0299fc227de1b6de7caceb4555c75ab8d0851
