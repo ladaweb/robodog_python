@@ -1,0 +1,176 @@
+[INFO] Cleared previous task list and QR records. Task list is now UNLOCKED.
+Key a pressed.
+statusCode:0
+data:{"succeed":true,"errorCode":0,"info":"Successfully started relocation.","data":{}}
+[DIAG-RELOC] raw response data = {"succeed":true,"errorCode":0,"info":"Successfully started relocation.","data":{}}
+[DIAG-POSE] after reloc: x=-0.0548996 y=0.119109 z=0.0442191 dist_from_origin=0.131152m
+[INFO] Relocation verified (0.131152m from origin). QR scanning enabled.
+[INFO] Task list is now UNLOCKED. QR sightings will be added as waypoints until you press 'd'.
+[INFO] Opening QR GStreamer pipeline:
+udpsrc address=230.1.1.1 port=1720 multicast-iface=eth0 ! queue ! application/x-rtp, media=video, encoding-name=H264 ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1 sync=false
+[ WARN:0] global /home/ubuntu/build_opencv/opencv/modules/videoio/src/cap_gstreamer.cpp (1100) open OpenCV | GStreamer warning: Cannot query video position: status=1, value=49, duration=-1
+[INFO] Headless QR detection thread started.
+[INFO] QR detection runs continuously including during patrol.
+[INFO] QR stream active, processed frames: 130
+[INFO] QR stream active, processed frames: 266
+[INFO] QR stream active, processed frames: 406
+[QR DETECTED] QR_CODE_1 (first sighting, added to task list)
+[QR POSE SAVED] QR_CODE_1 ts=6793285169632
+x:1.92781 y:0.158645 z:-0.0432904 q_x:-0.00870944 q_y:0.0253205 q_z:-0.888162 q_w:0.45875
+[INFO] Saved QR poses to /home/unitree/qr_poses.json
+[INFO] QR stream active, processed frames: 530
+[INFO] QR stream active, processed frames: 653
+[INFO] QR stream active, processed frames: 786
+[QR DETECTED] QR_CODE_2 (first sighting, added to task list)
+[QR POSE SAVED] QR_CODE_2 ts=6824951325440
+x:3.75418 y:1.71969 z:-0.140827 q_x:-0.00313483 q_y:-0.014699 q_z:-0.807618 q_w:-0.589514
+[INFO] Saved QR poses to /home/unitree/qr_poses.json
+[QR DETECTED] QR_CODE_2 (hit #40)
+[QR POSE UPDATED] QR_CODE_2 ts=6830115070784
+x:3.71934 y:1.73891 z:-0.144313 q_x:0.00727793 q_y:-0.0207322 q_z:-0.671055 q_w:-0.741082
+[INFO] Saved QR poses to /home/unitree/qr_poses.json
+[INFO] QR stream active, processed frames: 906
+[INFO] QR stream active, processed frames: 1046
+[INFO] QR stream active, processed frames: 1182
+[INFO] QR stream active, processed frames: 1308
+[QR DETECTED] QR_CODE_3 (first sighting, added to task list)
+[QR POSE SAVED] QR_CODE_3 ts=6863660142688
+x:4.23658 y:1.0277 z:-0.162654 q_x:0.00218277 q_y:-0.0400059 q_z:-0.227285 q_w:-0.973004
+[INFO] Saved QR poses to /home/unitree/qr_poses.json
+[INFO] QR stream active, processed frames: 1439
+[INFO] QR stream active, processed frames: 1569
+[INFO] QR stream active, processed frames: 1703
+[INFO] QR stream active, processed frames: 1833
+[INFO] QR stream active, processed frames: 1970
+Key d pressed.
+[INFO] Task list is now LOCKED. QR sightings are observation-only until you press 'f' or 'a'.
+task list num:3
+[NAV] Dispatching goal seq=1 to waypoint idx=0 (x=1.93882, y=0.0981726)
+[NAV] Call returned statusCode:0 data:{"succeed":true,"errorCode":0,"info":"Path planning and slicing executed successfully.","data":{"track":[[8888,9999]],"edgelist":[[9999]]}}
+[NAV] Robot within 0.171409m of waypoint 0, starting dwell timer
+[NAV] Distance-based arrival: robot has been within 0.2m of waypoint 0 for 3s. Advancing.
+[NAV] Arrived at waypoint 0 (seq=1, via distance fallback)
+[NAV] Dispatching goal seq=2 to waypoint idx=1 (x=3.70945, y=1.73066)
+"Task active interruption."
+[NAV] Call returned statusCode:0 data:{"succeed":true,"errorCode":0,"info":"Path planning and slicing executed successfully.","data":{"track":[[8888,9999]],"edgelist":[[9999]]}}
+[INFO] QR stream active, processed frames: 2100
+[NAV] Robot within 0.163182m of waypoint 1, starting dwell timer
+[QR DETECTED] QR_CODE_2 (hit #45)
+[QR POSE UPDATED] QR_CODE_2 ts=6930544909248
+x:3.72909 y:1.72449 z:-0.142782 q_x:0.00550103 q_y:-0.0298511 q_z:-0.674715 q_w:-0.737454
+[INFO] Saved QR poses to /home/unitree/qr_poses.json
+[NAV] Still waiting for arrival on seq=2 waypoint=1 (elapsed 10s, dist=0.0300596m)
+[INFO] QR stream active, processed frames: 2228
+[NAV] Distance-based arrival: robot has been within 0.2m of waypoint 1 for 3s. Advancing.
+[NAV] Arrived at waypoint 1 (seq=2, via distance fallback)
+[NAV] Dispatching goal seq=3 to waypoint idx=2 (x=4.23658, y=1.0277)
+[NAV] Call returned statusCode:0 data:{"succeed":true,"errorCode":0,"info":"Path planning and slicing executed successfully.","data":{"track":[[8888,9999]],"edgelist":[[9999]]}}
+[NAV] Robot within 0.188085m of waypoint 2, starting dwell timer
+[NAV] Distance-based arrival: robot has been within 0.2m of waypoint 2 for 3s. Advancing.
+[NAV] Arrived at waypoint 2 (seq=3, via distance fallback)
+[NAV] Dispatching goal seq=4 to waypoint idx=1 (x=3.70945, y=1.73066)
+[NAV] Call returned statusCode:0 data:{"succeed":true,"errorCode":0,"info":"Path planning and slicing executed successfully.","data":{"track":[[8888,9999]],"edgelist":[[9999]]}}
+[INFO] QR stream active, processed frames: 2359
+[QR DETECTED] QR_CODE_2 (hit #55)
+[QR POSE UPDATED] QR_CODE_2 ts=6945270213216
+x:4.26069 y:1.05448 z:-0.170719 q_x:0.0227815 q_y:0.00174579 q_z:-0.911152 q_w:-0.411437
+[INFO] Saved QR poses to /home/unitree/qr_poses.json
+[NAV] Robot within 0.171218m of waypoint 1, starting dwell timer
+[NAV] Distance-based arrival: robot has been within 0.2m of waypoint 1 for 3s. Advancing.
+[NAV] Arrived at waypoint 1 (seq=4, via distance fallback)
+[NAV] Dispatching goal seq=5 to waypoint idx=0 (x=1.93882, y=0.0981726)
+[NAV] Call returned statusCode:0 data:{"succeed":true,"errorCode":0,"info":"Path planning and slicing executed successfully.","data":{"track":[[8888,9999]],"edgelist":[[9999]]}}
+[INFO] QR stream active, processed frames: 2470
+[NAV] Still waiting for arrival on seq=5 waypoint=0 (elapsed 10s, dist=2.16902m)
+[INFO] QR stream active, processed frames: 2610
+[QR DETECTED] QR_CODE_1 (hit #14)
+[QR POSE UPDATED] QR_CODE_1 ts=6963238252416
+x:2.50875 y:0.557776 z:-0.098147 q_x:-0.0192864 q_y:0.00690804 q_z:-0.937777 q_w:0.346634
+[INFO] Saved QR poses to /home/unitree/qr_poses.json
+[NAV] Robot within 0.197036m of waypoint 0, starting dwell timer
+[NAV] Distance-based arrival: robot has been within 0.2m of waypoint 0 for 3s. Advancing.
+[NAV] Arrived at waypoint 0 (seq=5, via distance fallback)
+[NAV] Dispatching goal seq=6 to waypoint idx=1 (x=3.70945, y=1.73066)
+[NAV] Call returned statusCode:0 data:{"succeed":true,"errorCode":0,"info":"Path planning and slicing executed successfully.","data":{"track":[[8888,9999]],"edgelist":[[9999]]}}
+[INFO] QR stream active, processed frames: 2733
+[NAV] Still waiting for arrival on seq=6 waypoint=1 (elapsed 10s, dist=0.215452m)
+[NAV] Robot within 0.170121m of waypoint 1, starting dwell timer
+[QR DETECTED] QR_CODE_2 (hit #71)
+[QR POSE UPDATED] QR_CODE_2 ts=6979291362240
+x:3.71962 y:1.74361 z:-0.149213 q_x:0.00715522 q_y:-0.034615 q_z:-0.679297 q_w:-0.733011
+[INFO] Saved QR poses to /home/unitree/qr_poses.json
+[NAV] Distance-based arrival: robot has been within 0.2m of waypoint 1 for 3s. Advancing.
+[NAV] Arrived at waypoint 1 (seq=6, via distance fallback)
+[NAV] Dispatching goal seq=7 to waypoint idx=2 (x=4.23658, y=1.0277)
+[NAV] Call returned statusCode:0 data:{"succeed":true,"errorCode":0,"info":"Path planning and slicing executed successfully.","data":{"track":[[8888,9999]],"edgelist":[[9999]]}}
+[INFO] QR stream active, processed frames: 2858
+[NAV] Robot within 0.1631m of waypoint 2, starting dwell timer
+[NAV] Still waiting for arrival on seq=7 waypoint=2 (elapsed 10s, dist=0.082977m)
+[NAV] Distance-based arrival: robot has been within 0.2m of waypoint 2 for 3s. Advancing.
+[NAV] Arrived at waypoint 2 (seq=7, via distance fallback)
+[NAV] Dispatching goal seq=8 to waypoint idx=1 (x=3.70945, y=1.73066)
+[NAV] Call returned statusCode:0 data:{"succeed":true,"errorCode":0,"info":"Path planning and slicing executed successfully.","data":{"track":[[8888,9999]],"edgelist":[[9999]]}}
+[INFO] QR stream active, processed frames: 2991
+[QR DETECTED] QR_CODE_2 (hit #79)
+[QR POSE UPDATED] QR_CODE_2 ts=6994720806656
+x:4.18988 y:1.03811 z:-0.181515 q_x:0.0142991 q_y:-0.00571267 q_z:-0.888966 q_w:-0.457715
+[INFO] Saved QR poses to /home/unitree/qr_poses.json
+[NAV] Robot within 0.141946m of waypoint 1, starting dwell timer
+[NAV] Distance-based arrival: robot has been within 0.2m of waypoint 1 for 3s. Advancing.
+[NAV] Arrived at waypoint 1 (seq=8, via distance fallback)
+[NAV] Dispatching goal seq=9 to waypoint idx=0 (x=1.93882, y=0.0981726)
+[NAV] Call returned statusCode:0 data:{"succeed":true,"errorCode":0,"info":"Path planning and slicing executed successfully.","data":{"track":[[8888,9999]],"edgelist":[[9999]]}}
+[INFO] QR stream active, processed frames: 3122
+[NAV] Still waiting for arrival on seq=9 waypoint=0 (elapsed 10s, dist=2.18018m)
+[QR DETECTED] QR_CODE_1 (hit #43)
+[QR POSE UPDATED] QR_CODE_1 ts=7010908610208
+x:2.95698 y:0.931368 z:-0.120439 q_x:-0.00937732 q_y:0.0279923 q_z:-0.928789 q_w:0.369432
+[INFO] Saved QR poses to /home/unitree/qr_poses.json
+[INFO] QR stream active, processed frames: 3249
+[NAV] Robot within 0.199557m of waypoint 0, starting dwell timer
+[QR DETECTED] QR_CODE_1 (hit #63)
+[QR POSE UPDATED] QR_CODE_1 ts=7015987641120
+x:1.98844 y:0.124395 z:-0.061461 q_x:-0.0101376 q_y:0.0358341 q_z:-0.935661 q_w:0.350929
+[INFO] Saved QR poses to /home/unitree/qr_poses.json
+[NAV] Distance-based arrival: robot has been within 0.2m of waypoint 0 for 3s. Advancing.
+[NAV] Arrived at waypoint 0 (seq=9, via distance fallback)
+[NAV] Dispatching goal seq=10 to waypoint idx=1 (x=3.70945, y=1.73066)
+[NAV] Call returned statusCode:0 data:{"succeed":true,"errorCode":0,"info":"Path planning and slicing executed successfully.","data":{"track":[[8888,9999]],"edgelist":[[9999]]}}
+[INFO] QR stream active, processed frames: 3369
+[NAV] Robot within 0.189163m of waypoint 1, starting dwell timer
+[NAV] Still waiting for arrival on seq=10 waypoint=1 (elapsed 10s, dist=0.189163m)
+[QR DETECTED] QR_CODE_2 (hit #91)
+[QR POSE UPDATED] QR_CODE_2 ts=7028278842208
+x:3.72362 y:1.73931 z:-0.152534 q_x:0.00612246 q_y:-0.0237742 q_z:-0.682397 q_w:-0.73057
+[INFO] Saved QR poses to /home/unitree/qr_poses.json
+[NAV] Distance-based arrival: robot has been within 0.2m of waypoint 1 for 3s. Advancing.
+[NAV] Arrived at waypoint 1 (seq=10, via distance fallback)
+[NAV] Dispatching goal seq=11 to waypoint idx=2 (x=4.23658, y=1.0277)
+[NAV] Call returned statusCode:0 data:{"succeed":true,"errorCode":0,"info":"Path planning and slicing executed successfully.","data":{"track":[[8888,9999]],"edgelist":[[9999]]}}
+[INFO] QR stream active, processed frames: 3502
+[NAV] Robot within 0.169951m of waypoint 2, starting dwell timer
+[NAV] Distance-based arrival: robot has been within 0.2m of waypoint 2 for 3s. Advancing.
+[NAV] Arrived at waypoint 2 (seq=11, via distance fallback)
+[NAV] Dispatching goal seq=12 to waypoint idx=1 (x=3.70945, y=1.73066)
+[NAV] Call returned statusCode:0 data:{"succeed":true,"errorCode":0,"info":"Path planning and slicing executed successfully.","data":{"track":[[8888,9999]],"edgelist":[[9999]]}}
+[INFO] QR stream active, processed frames: 3637
+[QR DETECTED] QR_CODE_2 (hit #104)
+[QR POSE UPDATED] QR_CODE_2 ts=7043318053056
+x:4.24135 y:1.03937 z:-0.16595 q_x:-0.00586438 q_y:-0.0173624 q_z:-0.904313 q_w:-0.426477
+[INFO] Saved QR poses to /home/unitree/qr_poses.json
+[NAV] Robot within 0.189502m of waypoint 1, starting dwell timer
+[NAV] Distance-based arrival: robot has been within 0.2m of waypoint 1 for 3s. Advancing.
+[NAV] Arrived at waypoint 1 (seq=12, via distance fallback)
+[NAV] Dispatching goal seq=13 to waypoint idx=0 (x=1.93882, y=0.0981726)
+[NAV] Call returned statusCode:0 data:{"succeed":true,"errorCode":0,"info":"Path planning and slicing executed successfully.","data":{"track":[[8888,9999]],"edgelist":[[9999]]}}
+[INFO] QR stream active, processed frames: 3752
+[NAV] Still waiting for arrival on seq=13 waypoint=0 (elapsed 10s, dist=2.20573m)
+terminate called after throwing an instance of 'cv::Exception'
+  what():  OpenCV(4.5.4) /home/ubuntu/build_opencv/opencv/modules/objdetect/src/qrcode.cpp:2487: error: (-2:Unspecified error) in function 'std::string cv::QRCodeDetector::decode(cv::InputArray, cv::InputArray, cv::OutputArray)'
+> Invalid QR code source points (expected: 'contourArea(src_points) > 0.0'), where
+>     'contourArea(src_points)' is 0
+> must be greater than
+>     '0.0' is 0
+
+Aborted (core dumped)
+unitree@ubuntu:/unitree/module/unitree_slam/bin$ 

@@ -1,0 +1,347 @@
+unitree@ubuntu:/unitree/module/unitree_slam/bin$ ./unitree_slam 
+xt16 lidar ysn check success!
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I0101 09:52:18.570033  3695 timerwheel.hpp:57] Time wheel timer started!
+I0101 09:52:18.884951  3708 timerwheel.hpp:57] Time wheel timer started!
+server start ...
+server started. name:slam_operate, enable proirity queue:1
+Failed to find match for field 'intensity'.
+Failed to find match for field 'normal_x'.
+Failed to find match for field 'normal_y'.
+Failed to find match for field 'normal_z'.
+Failed to find match for field 'curvature'.
+------>>> Execute task finished <<<------
+Control end.
+------>>> Execute task finished <<<------
+Control end.
+------>>> Execute task finished <<<------
+Control end.
+------>>> Execute task finished <<<------
+Control end.
+occupancy_grid_pub_ptr_ --> Write
+get_map !
+get_start: 3.710966, 1.747872 
+get_goal: 1.938824, 0.098173 
+Astar start
+Find Goal!
+path size: 19
+Astar use : 0
+Astar use : 释放所有new的资源
+Astar end
+get_map ! width_grid is：98, height_grid is: 96, resolution is: 0.1
+set_goal xy idx is: 40.3882, 39.9817
+set_start xy idx is: 58.1097, 56.4787
+path start idx is: 40, 39
+path end idx is: 58, 56
+box_list size is: 2
+box_list[0].P1 is: 50, 60
+box_list[0].P2 is: 64, 60
+box_list[0].P3 is: 50, 45
+box_list[0].P4 is: 64, 45
+box_list[1].P1 is: 35, 52
+box_list[1].P2 is: 51, 52
+box_list[1].P3 is: 35, 35
+box_list[1].P4 is: 51, 35
+ID: 0, ns: box0, frame_ID: map, pose: 3.65 1.4
+ID: 1, ns: box1, frame_ID: map, pose: 2.25 0.5
+
+
+####################   qpOASES  --  QP NO.   1   #####################
+
+    Iter   |    StepLength    |       Info       |   nFX   |   nAC    
+ ----------+------------------+------------------+---------+--------- 
+       0   |   1.051749e-08   |   ADD CON    3   |    13   |     1   
+       1   |   8.766932e-10   |   ADD CON    0   |    12   |     2   
+       2   |   5.240295e-10   |   ADD CON   16   |    11   |     3   
+       3   |   1.550640e-11   |   ADD CON   17   |    10   |     4   
+       4   |   1.533785e-11   |   ADD CON   18   |     9   |     5   
+       5   |   1.517204e-11   |   ADD CON   19   |     8   |     6   
+       6   |   1.500890e-11   |   ADD CON   20   |     7   |     7   
+       7   |   1.484838e-11   |   ADD CON   21   |     6   |     8   
+       8   |   2.002008e-10   |   ADD CON   10   |     5   |     9   
+       9   |   1.710143e-11   |   ADD CON   11   |     4   |    10   
+      10   |   1.690928e-11   |   ADD CON   12   |     3   |    11   
+      11   |   1.672035e-11   |   ADD CON   13   |     2   |    12   
+      12   |   1.653457e-11   |   ADD CON   14   |     1   |    13   
+      13   |   1.635186e-11   |   ADD CON   15   |     0   |    14   
+      14   |   2.792608e-01   |   ADD CON    6   |     0   |    14   
+      15   |   6.134062e-01   |   ADD CON    7   |     0   |    14   
+      16   |   1.207139e-02   |   REM CON   14   |     0   |    13   
+      17   |   2.687038e-01   |   ADD CON    1   |     0   |    13   
+      18   |   3.332918e-01   |   ADD CON    4   |     0   |    13   
+      19   |   7.894831e-01   |   ADD CON    2   |     0   |    13   
+      20   |   3.980515e-01   |   ADD CON    5   |     0   |    13   
+      21   |   2.814741e-01   |   ADD CON    8   |     0   |    14   
+      22   |   6.126307e-01   |   REM CON   18   |     0   |    13   
+      23   |   2.487393e-01   |   REM CON   13   |     0   |    12   
+      24   |   7.351704e-01   |   REM CON   12   |     0   |    11   
+      25   |   2.086637e-01   |   REM CON   19   |     0   |    10   
+      26   |   7.427439e-01   |   REM CON    5   |     0   |     9   
+      27   |   8.937711e-02   |   ADD CON    5   |     0   |    10   
+      28   |   6.706667e-01   |   REM CON    4   |     0   |     9   
+      29   |   3.092652e-03   |   ADD CON    4   |     0   |    10   
+      30   |   7.306030e-01   |   REM CON    3   |     0   |     9   
+      31   |   4.335953e-05   |   ADD CON    3   |     0   |    10   
+      32   |   1.000000e+00   |    QP SOLVED     |     0   |    10   
+
+
+####################   qpOASES  --  QP NO.   2   #####################
+
+    Iter   |    StepLength    |       Info       |   nFX   |   nAC    
+ ----------+------------------+------------------+---------+--------- 
+       0   |   2.505861e-01   |   REM CON   15   |     0   |     9   
+       1   |   1.000000e+00   |    QP SOLVED     |     0   |     9   
+duration_ms is: 1
+------>>> Execute task finished <<<------
+Control end.
+------>>> Execute task finished <<<------
+Control end.
+------>>> Execute task finished <<<------
+Control end.
+------>>> Execute task finished <<<------
+Control end.
+occupancy_grid_pub_ptr_ --> Write
+get_map !
+get_start: 3.706379, 1.740555 
+get_goal: 1.938824, 0.098173 
+Astar start
+Find Goal!
+path size: 19
+Astar use : 0
+Astar use : 释放所有new的资源
+Astar end
+get_map ! width_grid is：98, height_grid is: 96, resolution is: 0.1
+set_goal xy idx is: 40.3882, 39.9817
+set_start xy idx is: 58.0638, 56.4055
+path start idx is: 40, 39
+path end idx is: 58, 56
+box_list size is: 2
+box_list[0].P1 is: 50, 60
+box_list[0].P2 is: 63, 60
+box_list[0].P3 is: 50, 45
+box_list[0].P4 is: 63, 45
+box_list[1].P1 is: 34, 52
+box_list[1].P2 is: 52, 52
+box_list[1].P3 is: 34, 35
+box_list[1].P4 is: 52, 35
+ID: 0, ns: box0, frame_ID: map, pose: 3.6 1.4
+ID: 1, ns: box1, frame_ID: map, pose: 2.25 0.5
+
+
+####################   qpOASES  --  QP NO.   1   #####################
+
+    Iter   |    StepLength    |       Info       |   nFX   |   nAC    
+ ----------+------------------+------------------+---------+--------- 
+       0   |   1.046964e-08   |   ADD CON    3   |    13   |     1   
+       1   |   8.698705e-10   |   ADD CON    0   |    12   |     2   
+       2   |   5.244792e-10   |   ADD CON   16   |    11   |     3   
+       3   |   1.543585e-11   |   ADD CON   17   |    10   |     4   
+       4   |   1.526807e-11   |   ADD CON   18   |     9   |     5   
+       5   |   1.510301e-11   |   ADD CON   19   |     8   |     6   
+       6   |   1.494061e-11   |   ADD CON   20   |     7   |     7   
+       7   |   1.478082e-11   |   ADD CON   21   |     6   |     8   
+       8   |   1.962570e-10   |   ADD CON   10   |     5   |     9   
+       9   |   1.701937e-11   |   ADD CON   11   |     4   |    10   
+      10   |   1.682814e-11   |   ADD CON   12   |     3   |    11   
+      11   |   1.664012e-11   |   ADD CON   13   |     2   |    12   
+      12   |   1.645523e-11   |   ADD CON   14   |     1   |    13   
+      13   |   1.627340e-11   |   ADD CON   15   |     0   |    14   
+      14   |   2.664577e-01   |   ADD CON    6   |     0   |    14   
+      15   |   6.033114e-01   |   ADD CON    7   |     0   |    14   
+      16   |   7.812333e-03   |   REM CON   14   |     0   |    13   
+      17   |   3.088220e-01   |   ADD CON    1   |     0   |    13   
+      18   |   2.146037e-01   |   ADD CON    4   |     0   |    13   
+      19   |   8.222616e-01   |   ADD CON    2   |     0   |    13   
+      20   |   2.729198e-01   |   ADD CON    5   |     0   |    13   
+      21   |   3.100307e-01   |   ADD CON    8   |     0   |    14   
+      22   |   6.434218e-01   |   REM CON   18   |     0   |    13   
+      23   |   2.728768e-01   |   REM CON   13   |     0   |    12   
+      24   |   7.425947e-01   |   REM CON   12   |     0   |    11   
+      25   |   9.163587e-02   |   REM CON   19   |     0   |    10   
+      26   |   7.771049e-01   |   REM CON    5   |     0   |     9   
+      27   |   8.859469e-02   |   ADD CON    5   |     0   |    10   
+      28   |   6.698512e-01   |   REM CON    4   |     0   |     9   
+      29   |   3.050671e-03   |   ADD CON    4   |     0   |    10   
+      30   |   7.298254e-01   |   REM CON    3   |     0   |     9   
+      31   |   4.256810e-05   |   ADD CON    3   |     0   |    10   
+      32   |   1.000000e+00   |    QP SOLVED     |     0   |    10   
+
+
+####################   qpOASES  --  QP NO.   2   #####################
+
+    Iter   |    StepLength    |       Info       |   nFX   |   nAC    
+ ----------+------------------+------------------+---------+--------- 
+       0   |   2.579678e-01   |   REM CON   15   |     0   |     9   
+       1   |   1.000000e+00   |    QP SOLVED     |     0   |     9   
+duration_ms is: 1
+------>>> Execute task finished <<<------
+Control end.
+------>>> Execute task finished <<<------
+Control end.
+------>>> Execute task finished <<<------
+Control end.
+------>>> Execute task finished <<<------
+Control end.
+occupancy_grid_pub_ptr_ --> Write
+get_map !
+get_start: 3.701643, 1.758725 
+get_goal: 1.938824, 0.098173 
+Astar start
+Find Goal!
+path size: 19
+Astar use : 0
+Astar use : 释放所有new的资源
+Astar end
+get_map ! width_grid is：98, height_grid is: 96, resolution is: 0.1
+set_goal xy idx is: 40.3882, 39.9817
+set_start xy idx is: 58.0164, 56.5872
+path start idx is: 40, 39
+path end idx is: 58, 56
+box_list size is: 2
+box_list[0].P1 is: 50, 60
+box_list[0].P2 is: 64, 60
+box_list[0].P3 is: 50, 45
+box_list[0].P4 is: 64, 45
+box_list[1].P1 is: 37, 55
+box_list[1].P2 is: 51, 55
+box_list[1].P3 is: 37, 34
+box_list[1].P4 is: 51, 34
+ID: 0, ns: box0, frame_ID: map, pose: 3.65 1.4
+ID: 1, ns: box1, frame_ID: map, pose: 2.35 0.6
+
+
+####################   qpOASES  --  QP NO.   1   #####################
+
+    Iter   |    StepLength    |       Info       |   nFX   |   nAC    
+ ----------+------------------+------------------+---------+--------- 
+       0   |   1.038028e-08   |   ADD CON    3   |    13   |     1   
+       1   |   8.606444e-10   |   ADD CON    0   |    12   |     2   
+       2   |   5.218043e-10   |   ADD CON   16   |    11   |     3   
+       3   |   1.530410e-11   |   ADD CON   17   |    10   |     4   
+       4   |   1.513776e-11   |   ADD CON   18   |     9   |     5   
+       5   |   1.497410e-11   |   ADD CON   19   |     8   |     6   
+       6   |   1.481309e-11   |   ADD CON   20   |     7   |     7   
+       7   |   1.465466e-11   |   ADD CON   21   |     6   |     8   
+       8   |   1.926538e-10   |   ADD CON   10   |     5   |     9   
+       9   |   1.687140e-11   |   ADD CON   11   |     4   |    10   
+      10   |   1.668184e-11   |   ADD CON   12   |     3   |    11   
+      11   |   1.649545e-11   |   ADD CON   13   |     2   |    12   
+      12   |   1.631216e-11   |   ADD CON   14   |     1   |    13   
+      13   |   1.613192e-11   |   ADD CON   15   |     0   |    14   
+      14   |   3.089505e-01   |   ADD CON    6   |     0   |    14   
+      15   |   6.401047e-01   |   ADD CON    7   |     0   |    14   
+      16   |   1.670561e-03   |   REM CON   17   |     0   |    13   
+      17   |   2.059829e-01   |   ADD CON    1   |     0   |    13   
+      18   |   5.796099e-01   |   ADD CON    4   |     0   |    13   
+      19   |   6.709190e-01   |   ADD CON    2   |     0   |    13   
+      20   |   6.374514e-01   |   ADD CON    5   |     0   |    13   
+      21   |   1.366225e-01   |   ADD CON    8   |     0   |    14   
+      22   |   5.489670e-01   |   REM CON   18   |     0   |    13   
+      23   |   1.983868e-01   |   REM CON   13   |     0   |    12   
+      24   |   7.212743e-01   |   REM CON   12   |     0   |    11   
+      25   |   4.331750e-01   |   REM CON   19   |     0   |    10   
+      26   |   6.248325e-01   |   REM CON    5   |     0   |     9   
+      27   |   8.714330e-02   |   ADD CON    5   |     0   |    10   
+      28   |   6.691006e-01   |   REM CON    4   |     0   |     9   
+      29   |   2.973696e-03   |   ADD CON    4   |     0   |    10   
+      30   |   7.290693e-01   |   REM CON    3   |     0   |     9   
+      31   |   4.113004e-05   |   ADD CON    3   |     0   |    10   
+      32   |   1.000000e+00   |    QP SOLVED     |     0   |    10   
+
+
+####################   qpOASES  --  QP NO.   2   #####################
+
+    Iter   |    StepLength    |       Info       |   nFX   |   nAC    
+ ----------+------------------+------------------+---------+--------- 
+       0   |   2.568049e-01   |   REM CON   15   |     0   |     9   
+       1   |   1.000000e+00   |    QP SOLVED     |     0   |     9   
+duration_ms is: 1
+occupancy_grid_pub_ptr_ --> Write
+get_map !
+get_start: 3.586920, 1.642061 
+get_goal: 1.938824, 0.098173 
+Astar start
+Find Goal!
+path size: 17
+Astar use : 0
+Astar use : 释放所有new的资源
+Astar end
+get_map ! width_grid is：98, height_grid is: 96, resolution is: 0.1
+set_goal xy idx is: 40.3882, 39.9817
+set_start xy idx is: 56.8692, 55.4206
+path start idx is: 40, 39
+path end idx is: 56, 55
+box_list size is: 2
+box_list[0].P1 is: 36, 56
+box_list[0].P2 is: 57, 56
+box_list[0].P3 is: 36, 43
+box_list[0].P4 is: 57, 43
+box_list[1].P1 is: 34, 53
+box_list[1].P2 is: 51, 53
+box_list[1].P3 is: 34, 35
+box_list[1].P4 is: 51, 35
+ID: 0, ns: box0, frame_ID: map, pose: 2.6 1.1
+ID: 1, ns: box1, frame_ID: map, pose: 2.2 0.55
+
+
+####################   qpOASES  --  QP NO.   1   #####################
+
+    Iter   |    StepLength    |       Info       |   nFX   |   nAC    
+ ----------+------------------+------------------+---------+--------- 
+       0   |   1.126156e-08   |   ADD CON    3   |    13   |     1   
+       1   |   9.367743e-10   |   ADD CON    0   |    12   |     2   
+       2   |   5.630432e-10   |   ADD CON   16   |    11   |     3   
+       3   |   1.660341e-11   |   ADD CON   17   |    10   |     4   
+       4   |   1.642294e-11   |   ADD CON   18   |     9   |     5   
+       5   |   1.624539e-11   |   ADD CON   19   |     8   |     6   
+       6   |   1.607071e-11   |   ADD CON   20   |     7   |     7   
+       7   |   1.589883e-11   |   ADD CON   21   |     6   |     8   
+       8   |   2.122872e-10   |   ADD CON   10   |     5   |     9   
+       9   |   1.830836e-11   |   ADD CON   11   |     4   |    10   
+      10   |   1.810265e-11   |   ADD CON   12   |     3   |    11   
+      11   |   1.790039e-11   |   ADD CON   13   |     2   |    12   
+      12   |   1.770149e-11   |   ADD CON   14   |     1   |    13   
+      13   |   1.750590e-11   |   ADD CON   15   |     0   |    14   
+      14   |   5.803875e-01   |   ADD CON    1   |     0   |    14   
+      15   |   3.898716e-01   |   ADD CON    6   |     0   |    14   
+      16   |   3.482343e-01   |   ADD CON    4   |     0   |    14   
+      17   |   5.164246e-01   |   ADD CON    2   |     0   |    14   
+      18   |   3.587499e-01   |   ADD CON    7   |     0   |    14   
+      19   |   5.558491e-01   |   ADD CON    5   |     0   |    14   
+      20   |   6.708740e-01   |   ADD CON    8   |     0   |    14   
+      21   |   6.717003e-01   |   REM CON   13   |     0   |    13   
+      22   |   1.900185e-02   |   REM CON   12   |     0   |    12   
+      23   |   7.431346e-01   |   REM CON   19   |     0   |    11   
+      24   |   1.250191e-01   |   ADD CON   17   |     0   |    12   
+      25   |   7.707003e-02   |   REM CON    7   |     0   |    11   
+      26   |   1.121798e-02   |   ADD CON    7   |     0   |    12   
+      27   |   1.810700e-01   |   REM CON    6   |     0   |    11   
+      28   |   5.298911e-03   |   ADD CON    6   |     0   |    12   
+      29   |   7.273913e-02   |   REM CON   18   |     0   |    11   
+      30   |   1.205020e-01   |   REM CON   15   |     0   |    10   
+      31   |   1.114645e-01   |   ADD CON   18   |     0   |    11   
+      32   |   2.491348e-01   |   REM CON    8   |     0   |    10   
+      33   |   1.821176e-02   |   ADD CON    8   |     0   |    11   
+      34   |   2.277606e-01   |   REM CON    6   |     0   |    10   
+      35   |   9.444042e-05   |   ADD CON    6   |     0   |    11   
+      36   |   1.669880e-02   |   REM CON   17   |     0   |    10   
+      37   |   2.299141e-01   |   REM CON   18   |     0   |     9   
+      38   |   7.628542e-01   |   REM CON    5   |     0   |     8   
+      39   |   1.203300e-02   |   ADD CON    5   |     0   |     9   
+      40   |   4.966963e-01   |   REM CON    4   |     0   |     8   
+      41   |   3.457734e-04   |   ADD CON    4   |     0   |     9   
+      42   |   5.987108e-01   |   REM CON    3   |     0   |     8   
+      43   |   4.178834e-06   |   ADD CON    3   |     0   |     9   
+      44   |   8.463523e-01   |   REM CON    7   |     0   |     8   
+      45   |   8.850074e-05   |   ADD CON    7   |     0   |     9   
+      46   |   1.000000e+00   |    QP SOLVED     |     0   |     9   
+
+
+####################   qpOASES  --  QP NO.   2   #####################
+
+    Iter   |    StepLength    |       Info       |   nFX   |   nAC    
+ ----------+------------------+------------------+---------+--------- 
+       0   |   1.000000e+00   |    QP SOLVED     |     0   |     9   
+duration_ms is: 1
+------>>> Execute task finished <<<------
+Control end.

@@ -1,0 +1,214 @@
+^C
+unitree@ubuntu:/unitree/module/unitree_slam/bin$ pkill -f keyDemo
+unitree@ubuntu:/unitree/module/unitree_slam/bin$ ./keyDemo eth0
+*********************** Unitree SLAM Demo ***********************
+---------------          q  w             -----------------
+---------------       a  s  d  f          -----------------
+---------------          z  x             -----------------
+------------------------------------------------------------------
+------------------ q: Start mapping           -------------------
+------------------ w: End mapping             -------------------
+------------------ a: Start relocation        -------------------
+------------------ s: Add pose to task list   -------------------
+------------------ d: Execute task list       -------------------
+------------------ f: Clear task list         -------------------
+------------------ z: Pause navigation        -------------------
+------------------ x: Resume navigation       -------------------
+---------------- Press any other key to stop SLAM ----------------
+------------------------------------------------------------------
+---------------- QR detection starts after relocation ------------
+---------------- QR sightings auto-add waypoints between 'a' -----
+---------------- and 'd'. After 'd' they are observation only. ---
+---------------- Press 'f' or 'a' to unlock and start over. ------
+---------------- First and last sighting poses recorded ----------
+------------------------------------------------------------------
+--------------- Press 'Ctrl + C' to exit the program -------------
+------------------------------------------------------------------
+
+[INFO] Cleared previous task list and QR records. Task list is now UNLOCKED.
+Key a pressed.
+statusCode:0
+data:{"succeed":true,"errorCode":0,"info":"Successfully started relocation.","data":{}}
+[DIAG-RELOC] raw response data = {"succeed":true,"errorCode":0,"info":"Successfully started relocation.","data":{}}
+[DIAG-POSE] after reloc: x=0.0105744 y=-0.290006 z=0.111497 dist_from_origin=0.290199m
+[INFO] Relocation verified (0.290199m from origin). QR scanning enabled.
+[INFO] Task list is now UNLOCKED. QR sightings will be added as waypoints until you press 'd'.
+[INFO] Opening QR GStreamer pipeline:
+udpsrc address=230.1.1.1 port=1720 multicast-iface=eth0 ! queue ! application/x-rtp, media=video, encoding-name=H264 ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1 sync=false
+[ WARN:0] global /home/ubuntu/build_opencv/opencv/modules/videoio/src/cap_gstreamer.cpp (1100) open OpenCV | GStreamer warning: Cannot query video position: status=1, value=39, duration=-1
+[INFO] Headless QR detection thread started.
+[INFO] QR detection runs continuously including during patrol.
+[INFO] QR stream active, processed frames: 141
+[INFO] QR stream active, processed frames: 278
+[INFO] QR stream active, processed frames: 419
+[QR DETECTED] QR_CODE_2 (first sighting, added to task list)
+[QR POSE SAVED] QR_CODE_2 ts=180740964761440
+x:1.71288 y:-0.307696 z:0.0893034 q_x:-0.0138338 q_y:0.0187349 q_z:0.719259 q_w:0.694352
+[INFO] Saved QR poses to /home/unitree/qr_poses.json
+[INFO] QR stream active, processed frames: 518
+[INFO] QR stream active, processed frames: 644
+[INFO] QR stream active, processed frames: 766
+[QR DETECTED] QR_CODE_1 (first sighting, added to task list)
+[QR POSE SAVED] QR_CODE_1 ts=180765904334016
+x:3.51984 y:1.01361 z:0.151577 q_x:-0.0038247 q_y:-0.0306983 q_z:0.974039 q_w:0.224259
+[INFO] Saved QR poses to /home/unitree/qr_poses.json
+[INFO] QR stream active, processed frames: 889
+[INFO] QR stream active, processed frames: 1020
+[INFO] QR stream active, processed frames: 1148
+[INFO] QR stream active, processed frames: 1279
+Key d pressed.
+[INFO] Task list is now LOCKED. QR sightings are observation-only until you press 'f' or 'a'.
+task list num:2
+[NAV] Dispatching goal seq=1 to waypoint idx=0 (x=1.65614, y=-0.308163)
+[NAV] Call returned statusCode:0 data:{"succeed":true,"errorCode":0,"info":"Path planning and slicing executed successfully.","data":{"track":[[8888,9999]],"edgelist":[[9999]]}}
+[NAV] Robot within 0.170933m of waypoint 0, starting dwell timer
+[NAV] Distance-based arrival: robot has been within 0.2m of waypoint 0 for 3s. Advancing.
+[NAV] Arrived at waypoint 0 (seq=1, via distance fallback)
+[NAV] Dispatching goal seq=2 to waypoint idx=1 (x=3.54219, y=1.01608)
+[NAV] Call returned statusCode:0 data:{"succeed":true,"errorCode":0,"info":"Path planning and slicing executed successfully.","data":{"track":[[8888,9999]],"edgelist":[[9999]]}}
+[QR DETECTED] QR_CODE_2 (hit #21)
+[QR POSE UPDATED] QR_CODE_2 ts=180813033965568
+x:1.70064 y:-0.346674 z:0.0740777 q_x:-0.00327695 q_y:0.0174764 q_z:0.640256 q_w:0.767956
+[INFO] Saved QR poses to /home/unitree/qr_poses.json
+[INFO] QR stream active, processed frames: 1400
+[NAV] Still waiting for arrival on seq=2 waypoint=1 (elapsed 10s, dist=2.09984m)
+[INFO] QR stream active, processed frames: 1509
+[NAV] Robot within 0.197467m of waypoint 1, starting dwell timer
+[NAV] Still waiting for arrival on seq=2 waypoint=1 (elapsed 20s, dist=0.019899m)
+[QR DETECTED] QR_CODE_1 (hit #3)
+[QR POSE UPDATED] QR_CODE_1 ts=180832776558240
+x:3.54635 y:1.02987 z:0.122161 q_x:0.00218736 q_y:-0.0203804 q_z:0.977358 q_w:0.210596
+[INFO] Saved QR poses to /home/unitree/qr_poses.json
+[NAV] Distance-based arrival: robot has been within 0.2m of waypoint 1 for 3s. Advancing.
+[NAV] Arrived at waypoint 1 (seq=2, via distance fallback)
+[NAV] Dispatching goal seq=3 to waypoint idx=0 (x=1.65614, y=-0.308163)
+[NAV] Call returned statusCode:0 data:{"succeed":true,"errorCode":0,"info":"Path planning and slicing executed successfully.","data":{"track":[[8888,9999]],"edgelist":[[9999]]}}
+[INFO] QR stream active, processed frames: 1632
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+[NAV] Still waiting for arrival on seq=3 waypoint=0 (elapsed 10s, dist=2.0827m)
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+[INFO] QR stream active, processed frames: 1748
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+"There are obstacles nearby, please be careful"
+[NAV] Still waiting for arrival on seq=3 waypoint=0 (elapsed 20s, dist=1.61674m)
+[INFO] QR stream active, processed frames: 1890
+[NAV] Robot within 0.19054m of waypoint 0, starting dwell timer
+[QR DETECTED] QR_CODE_2 (hit #27)
+[QR POSE UPDATED] QR_CODE_2 ts=180860116207648
+x:1.62883 y:-0.301006 z:0.0906267 q_x:-0.00661052 q_y:0.00293928 q_z:0.659017 q_w:0.752093
+[INFO] Saved QR poses to /home/unitree/qr_poses.json
+[NAV] Distance-based arrival: robot has been within 0.2m of waypoint 0 for 3s. Advancing.
+[NAV] Arrived at waypoint 0 (seq=3, via distance fallback)
+[NAV] Dispatching goal seq=4 to waypoint idx=1 (x=3.54219, y=1.01608)
+[NAV] Call returned statusCode:0 data:{"succeed":true,"errorCode":0,"info":"Path planning and slicing executed successfully.","data":{"track":[[8888,9999]],"edgelist":[[9999]]}}
+[INFO] QR stream active, processed frames: 2024
+[NAV] Still waiting for arrival on seq=4 waypoint=1 (elapsed 10s, dist=2.25958m)
+[INFO] QR stream active, processed frames: 2165
+[NAV] Still waiting for arrival on seq=4 waypoint=1 (elapsed 20s, dist=2.02124m)
+[INFO] QR stream active, processed frames: 2302
+[NAV] Robot within 0.198925m of waypoint 1, starting dwell timer
+[QR DETECTED] QR_CODE_1 (hit #30)
+[QR POSE UPDATED] QR_CODE_1 ts=180889675563264
+x:3.57021 y:1.03449 z:0.122391 q_x:-0.0321395 q_y:-0.0132372 q_z:0.979414 q_w:0.198847
+[INFO] Saved QR poses to /home/unitree/qr_poses.json
+[NAV] Still waiting for arrival on seq=4 waypoint=1 (elapsed 30s, dist=0.0271482m)
+[NAV] Distance-based arrival: robot has been within 0.2m of waypoint 1 for 3s. Advancing.
+[NAV] Arrived at waypoint 1 (seq=4, via distance fallback)
+[NAV] Dispatching goal seq=5 to waypoint idx=0 (x=1.65614, y=-0.308163)
+[NAV] Call returned statusCode:0 data:{"succeed":true,"errorCode":0,"info":"Path planning and slicing executed successfully.","data":{"track":[[8888,9999]],"edgelist":[[9999]]}}
+[INFO] QR stream active, processed frames: 2432
+[NAV] Still waiting for arrival on seq=5 waypoint=0 (elapsed 10s, dist=1.85818m)
+[INFO] QR stream active, processed frames: 2571
+[NAV] Robot within 0.194138m of waypoint 0, starting dwell timer
+[NAV] Distance-based arrival: robot has been within 0.2m of waypoint 0 for 3s. Advancing.
+[NAV] Arrived at waypoint 0 (seq=5, via distance fallback)
+[NAV] Dispatching goal seq=6 to waypoint idx=1 (x=3.54219, y=1.01608)
+[QR DETECTED] QR_CODE_2 (hit #28)
+[QR POSE UPDATED] QR_CODE_2 ts=180908515135872
+x:1.64515 y:-0.318239 z:0.100387 q_x:-0.0166958 q_y:0.016477 q_z:0.706778 q_w:0.707047
+[INFO] Saved QR poses to /home/unitree/qr_poses.json
+[NAV] Call returned statusCode:0 data:{"succeed":true,"errorCode":0,"info":"Path planning and slicing executed successfully.","data":{"track":[[8888,9999]],"edgelist":[[9999]]}}
+Key z pressed.
+statusCode:0
+data:{"succeed":true,"errorCode":0,"info":"Pause navigation successful.","data":{}}
+[INFO] QR stream active, processed frames: 2698
+[NAV] Still waiting for arrival on seq=6 waypoint=1 (elapsed 10s, dist=2.0957m)
+[INFO] QR stream active, processed frames: 2800
+[NAV] Still waiting for arrival on seq=6 waypoint=1 (elapsed 20s, dist=2.09353m)
+[INFO] QR stream active, processed frames: 2937
+Key f pressed.
+[INFO] Cleared previous task list and QR records. Task list is now UNLOCKED.
+Clear task list
+[NAV] Still waiting for arrival on seq=6 waypoint=1 (elapsed 30s, dist=2.10272m)
+
